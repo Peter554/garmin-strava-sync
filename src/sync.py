@@ -1,6 +1,5 @@
 import os
 import contextlib
-import time
 
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
@@ -29,8 +28,6 @@ def main():
                 os.getenv("STRAVA_PASSWORD"),
                 sync_dir,
             )
-
-            time.sleep(10)  # TODO
 
 
 if __name__ == "__main__":
