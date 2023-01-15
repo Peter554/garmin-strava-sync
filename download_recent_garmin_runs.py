@@ -1,19 +1,14 @@
 import re
-import contextlib
-
-from playwright.sync_api import sync_playwright
 
 
 def download_recent_garmin_runs(
-    garmin_connect_email, garmin_connect_password, out_folder
+    browser, garmin_connect_email, garmin_connect_password, out_folder
 ):
-    with sync_playwright() as p:
-        with contextlib.closing(p.chromium.launch(headless=False)) as browser:
-            page = browser.new_page()
-            login(page, garmin_connect_email, garmin_connect_password)
-            activity_ids = get_recent_activity_ids(page)
-            for activity_id in activity_ids:
-                download_activity_tcx(page, activity_id, out_folder)
+    page = browser.new_page()
+    login(page, garmin_connect_email, garmin_connect_password)
+    activity_ids = get_recent_activity_ids(page)
+    for activity_id in activity_ids:
+        download_activity_tcx(page, activity_id, out_folder)
 
 
 def login(page, garmin_connect_email, garmin_connect_password):
