@@ -14,7 +14,6 @@ def download_recent_garmin_runs(
             activity_ids = get_recent_activity_ids(page)
             for activity_id in activity_ids:
                 download_activity_tcx(page, activity_id, out_folder)
-                break
 
 
 def login(page, garmin_connect_email, garmin_connect_password):
