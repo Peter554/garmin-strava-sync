@@ -1,10 +1,12 @@
 import os
 import contextlib
+import time
 
 import dotenv
 from playwright.sync_api import sync_playwright
 
 from download_recent_garmin_runs import download_recent_garmin_runs
+from upload_garmin_runs_to_strava import upload_garmin_runs_to_strava
 
 
 def main():
@@ -22,12 +24,14 @@ def main():
                 sync_dir,
             )
 
-            # upload_garmin_runs_to_strava(
-            #     browser,
-            #     os.getenv("STRAVA_EMAIL"),
-            #     os.getenv("STRAVA_PASSWORD"),
-            #     sync_dir
-            # )
+            upload_garmin_runs_to_strava(
+                browser,
+                os.getenv("STRAVA_EMAIL"),
+                os.getenv("STRAVA_PASSWORD"),
+                sync_dir,
+            )
+
+            time.sleep(10)  # TODO
 
 
 if __name__ == "__main__":
