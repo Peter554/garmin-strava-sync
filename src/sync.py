@@ -10,7 +10,7 @@ from upload_garmin_runs_to_strava import upload_garmin_runs_to_strava
 
 def main():
     load_dotenv()
-    sync_dir = "garmin_runs"
+    sync_dir = os.getenv("GARMIN_STRAVA_SYNC_DIR")
     with sync_playwright() as p:
         with contextlib.closing(p.chromium.launch(headless=False)) as browser:
             page = browser.new_page()

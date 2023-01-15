@@ -2,12 +2,12 @@ import re
 
 
 def download_recent_garmin_runs(
-    page, garmin_connect_email, garmin_connect_password, sync_dir
+    page, garmin_connect_email, garmin_connect_password, out_dir
 ):
     login(page, garmin_connect_email, garmin_connect_password)
     activity_ids = get_recent_activity_ids(page)
     for activity_id in activity_ids:
-        download_activity_tcx(page, activity_id, sync_dir)
+        download_activity_tcx(page, activity_id, out_dir)
 
 
 def login(page, garmin_connect_email, garmin_connect_password):
@@ -40,10 +40,10 @@ def get_activity_id(activity_link):
     return activity_link.get_attribute("href")[17:]
 
 
-def download_activity_tcx(page, activity_id, sync_dir):
+def download_activity_tcx(page, activity_id, out_dir):
     page.goto(f"https://connect.garmin.com/modern/activity/{activity_id}")
     page.get_by_role("button", name="More...").click()
     with page.expect_download() as download_info:
         page.get_by_text("Export to TCX").click()
     download = download_info.value
-    download.save_as(f"{sync_dir}/{activity_id}.tcx")
+    download.save_as(f"{out_dir}/{activity_id}.tcx")

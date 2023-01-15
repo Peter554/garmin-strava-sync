@@ -3,10 +3,10 @@ import os
 from playwright.sync_api import TimeoutError
 
 
-def upload_garmin_runs_to_strava(page, strava_email, strava_password, sync_dir):
+def upload_garmin_runs_to_strava(page, strava_email, strava_password, garmin_runs_dir):
     login(page, strava_email, strava_password)
-    for file_path in os.listdir(sync_dir):
-        upload_tcx_to_strava(page, f"{sync_dir}/{file_path}")
+    for tcx_file_path in os.listdir(garmin_runs_dir):
+        upload_tcx_to_strava(page, f"{garmin_runs_dir}/{tcx_file_path}")
 
 
 def login(page, strava_email, strava_password):
