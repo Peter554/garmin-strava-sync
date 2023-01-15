@@ -15,4 +15,4 @@ RUN mkdir garmin_runs
 
 COPY ./src .
 
-CMD ["xvfb-run", "--auto-servernum", "python", "sync.py"]
+CMD ["xvfb-run", "python", "sync.py"]
