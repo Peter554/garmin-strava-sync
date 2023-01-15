@@ -8,7 +8,7 @@ def download_recent_garmin_runs(
     garmin_connect_email, garmin_connect_password, out_folder
 ):
     with sync_playwright() as p:
-        with contextlib.closing(p.chromium.launch()) as browser:
+        with contextlib.closing(p.chromium.launch(headless=False)) as browser:
             page = browser.new_page()
             login(page, garmin_connect_email, garmin_connect_password)
             activity_ids = get_recent_activity_ids(page)
