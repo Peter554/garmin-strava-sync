@@ -54,6 +54,7 @@ def upload_activity_file_to_strava(page, garmin_activities_dir, activity_id):
                 logging.info("waiting...")
                 page.wait_for_timeout(3000)
             else:
-                # No need to click save_button, activity is already saved.
+                save_button.click()
+                page.wait_for_url("**/activities/*", wait_until="networkidle")
                 logging.info("upload complete")
                 return
