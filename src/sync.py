@@ -11,7 +11,7 @@ from upload_garmin_runs_to_strava import upload_garmin_runs_to_strava
 
 
 def main():
-    dotenv.load_dotenv()
+    dotenv.load_dotenv()  # support .env file for running locally.
     logging.basicConfig(level=logging.INFO)
 
     with tempfile.TemporaryDirectory() as sync_dir:
