@@ -20,7 +20,7 @@ def login(page, garmin_connect_email, garmin_connect_password):
     login_iframe.get_by_label("Password").fill(garmin_connect_password)
     login_iframe.get_by_role("button", name="Sign In").click()
     page.locator(".signed-in").wait_for()
-    logging.info("logged in garmin")
+    logging.info("logged in to garmin")
 
 
 def get_recent_activity_ids(page, max_activities):

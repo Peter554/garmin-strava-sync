@@ -13,7 +13,7 @@ def upload_garmin_runs_to_strava(
         [f[:-4] for f in os.listdir(garmin_activities_dir) if f.endswith(".tcx")],
         key=lambda f: int(f),
     )
-    logging.info(f"found {len(activity_ids)} activity files: {activity_ids}")
+    logging.info(f"found {len(activity_ids)} activities: {activity_ids}")
     for activity_id in activity_ids:
         upload_activity_file_to_strava(page, garmin_activities_dir, activity_id)
 
@@ -29,7 +29,7 @@ def login(page, strava_email, strava_password):
 
 
 def upload_activity_file_to_strava(page, garmin_activities_dir, activity_id):
-    logging.info(f"uploading activity file to strava: {activity_id}")
+    logging.info(f"uploading activity to strava: {activity_id}")
     page.goto("https://www.strava.com/upload/select")
     page.locator(".files").set_input_files(f"{garmin_activities_dir}/{activity_id}.tcx")
     while True:
