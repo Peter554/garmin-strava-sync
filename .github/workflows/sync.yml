@@ -1,0 +1,26 @@
+name: Sync
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 11,23 * * *'
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Ensure browsers are installed
+        run: python -m playwright install --with-deps chromium
+      - name: Run the sync
+        run: xvfb-run python src/sync.py
+        env:
+          GARMIN_STRAVA_SYNC_MAX_ACTIVITIES: 5
+          GARMIN_CONNECT_EMAIL: byfield554@gmail.com
+          GARMIN_CONNECT_PASSWORD: ${{ secrets.GARMIN_CONNECT_PASSWORD }}
+          STRAVA_EMAIL: byfield554@gmail.com
+          STRAVA_PASSWORD: ${{ secrets.STRAVA_PASSWORD }}
