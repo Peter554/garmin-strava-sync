@@ -1,25 +1,31 @@
 import re
+import logging
 
 
 def download_recent_garmin_runs(
-    page, garmin_connect_email, garmin_connect_password, out_dir
+    page, garmin_connect_email, garmin_connect_password, out_dir, max_activities
 ):
+    logging.info(f"downloading recent garmin runs to {out_dir} (max {max_activities})")
     login(page, garmin_connect_email, garmin_connect_password)
-    activity_ids = get_recent_activity_ids(page)
+    activity_ids = get_recent_activity_ids(page, max_activities)
     for activity_id in activity_ids:
         download_activity_tcx(page, activity_id, out_dir)
 
 
 def login(page, garmin_connect_email, garmin_connect_password):
+    logging.info("logging in to garmin")
     page.goto("https://connect.garmin.com/signin")
     login_iframe = page.frame_locator("#gauth-widget-frame-gauth-widget")
     login_iframe.get_by_label("Email").fill(garmin_connect_email)
     login_iframe.get_by_label("Password").fill(garmin_connect_password)
     login_iframe.get_by_role("button", name="Sign In").click()
-    page.get_by_role("link", name="Profile & Account").wait_for()
+    page.locator(".signed-in").wait_for()
+    logging.info("logged in garmin")
 
 
-def get_recent_activity_ids(page):
+def get_recent_activity_ids(page, max_activities):
+    logging.info("fetching recent activity IDs")
+    # TODO Scroll list of activities if max_activities > initial paging.
     page.goto("https://connect.garmin.com/modern/activities?activityType=running")
     page.wait_for_load_state("networkidle")
     activity_links = [
@@ -28,6 +34,8 @@ def get_recent_activity_ids(page):
         if is_activity_link(link)
     ]
     activity_ids = [get_activity_id(activity_link) for activity_link in activity_links]
+    activity_ids = activity_ids[:max_activities]
+    logging.info(f"fetched {len(activity_ids)} recent activity IDs: {activity_ids}")
     return activity_ids
 
 
@@ -41,9 +49,11 @@ def get_activity_id(activity_link):
 
 
 def download_activity_tcx(page, activity_id, out_dir):
+    logging.info(f"downloading activity TCX: {activity_id}")
     page.goto(f"https://connect.garmin.com/modern/activity/{activity_id}")
     page.get_by_role("button", name="More...").click()
     with page.expect_download() as download_info:
         page.get_by_text("Export to TCX").click()
     download = download_info.value
     download.save_as(f"{out_dir}/{activity_id}.tcx")
+    logging.info("download complete")
