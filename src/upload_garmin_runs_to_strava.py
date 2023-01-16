@@ -29,7 +29,7 @@ def upload_tcx_to_strava(page, tcx_file_path):
     page.locator(".files").set_input_files(tcx_file_path)
     while True:
         try:
-            page.get_by_text("duplicate of activity").wait_for(timeout=1000)
+            page.get_by_text("duplicate of activity").wait_for(timeout=100)
             logging.info("activity already exists, skipping (duplicate)")
             return
         except TimeoutError:
@@ -37,15 +37,17 @@ def upload_tcx_to_strava(page, tcx_file_path):
 
         try:
             save_button = page.get_by_role("button", name="Save & View").element_handle(
-                timeout=1000
+                timeout=100
             )
         except TimeoutError:
             ...
         else:
-            if save_button.is_disabled():
+            if save_button.is_disabled() or "disabled" in save_button.evaluate(
+                "node => node.className"
+            ):
                 # upload still in progress
                 logging.info("waiting...")
-                page.wait_for_timeout(1000)
+                page.wait_for_timeout(3000)
             else:
                 # No need to click save_button, activity is already saved.
                 logging.info("upload complete")
