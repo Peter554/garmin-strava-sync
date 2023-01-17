@@ -2,7 +2,7 @@ name: Sync
 on:
   workflow_dispatch:
   schedule:
-    - cron:  '13 11,23 * * *'
+    - cron:  '13 10 * * *'
 jobs:
   sync:
     runs-on: ubuntu-latest
