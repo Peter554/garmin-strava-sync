@@ -2,41 +2,30 @@ import re
 import logging
 
 
-def download_recent_garmin_runs(
-    page, garmin_connect_email, garmin_connect_password, out_dir, max_activities
-):
-    logging.info(f"downloading recent garmin runs to {out_dir} (max {max_activities})")
-    login(page, garmin_connect_email, garmin_connect_password)
-    activity_ids = get_recent_activity_ids(page, max_activities)
+def download_recent_garmin_runs(page, out_dir, n_activities):
+    logging.info(f"downloading recent garmin runs to {out_dir} ({n_activities})")
+    activity_ids = get_recent_activity_ids(page, n_activities)
     for activity_id in activity_ids:
         download_activity_tcx(page, activity_id, out_dir)
 
 
-def login(page, garmin_connect_email, garmin_connect_password):
-    logging.info("logging in to garmin")
-    page.goto("https://connect.garmin.com/signin")
-    login_iframe = page.frame_locator("#gauth-widget-frame-gauth-widget")
-    login_iframe.get_by_label("Email").fill(garmin_connect_email)
-    login_iframe.get_by_label("Password").fill(garmin_connect_password)
-    login_iframe.get_by_role("button", name="Sign In").click()
-    page.locator(".signed-in").wait_for()
-    logging.info("logged in to garmin")
-
-
-def get_recent_activity_ids(page, max_activities):
+# note: case where n_activities exceeds the paging (20?) is not handled.
+def get_recent_activity_ids(page, n_activities):
     logging.info("fetching recent activity IDs")
-    # TODO Scroll list of activities if max_activities > initial paging.
     page.goto("https://connect.garmin.com/modern/activities?activityType=running")
-    page.wait_for_load_state("networkidle")
-    activity_links = [
-        link
-        for link in page.get_by_role("link").element_handles()
-        if is_activity_link(link)
-    ]
+
+    # assumption: the user has at least 1 activity
+    while not (activity_links := get_activity_links(page)):
+        page.wait_for_timeout(500)
+
     activity_ids = [get_activity_id(activity_link) for activity_link in activity_links]
-    activity_ids = activity_ids[:max_activities]
+    activity_ids = activity_ids[:n_activities]
     logging.info(f"fetched {len(activity_ids)} recent activity IDs: {activity_ids}")
     return activity_ids
+
+
+def get_activity_links(page):
+    return [link for link in page.get_by_role("link").all() if is_activity_link(link)]
 
 
 def is_activity_link(link):

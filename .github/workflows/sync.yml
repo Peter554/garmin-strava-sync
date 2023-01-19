@@ -19,7 +19,7 @@ jobs:
       - name: Run the sync
         run: xvfb-run python src/sync.py
         env:
-          GARMIN_STRAVA_SYNC_MAX_ACTIVITIES: 5
+          GARMIN_STRAVA_SYNC_N_ACTIVITIES: 5
           GARMIN_CONNECT_EMAIL: byfield554@gmail.com
           GARMIN_CONNECT_PASSWORD: ${{ secrets.GARMIN_CONNECT_PASSWORD }}
           STRAVA_EMAIL: byfield554@gmail.com
