@@ -31,7 +31,7 @@ def main():
                 download_recent_garmin_runs(
                     page,
                     sync_dir,
-                    config.max_activities,
+                    config.n_activities,
                 )
                 upload_garmin_runs_to_strava(
                     page,

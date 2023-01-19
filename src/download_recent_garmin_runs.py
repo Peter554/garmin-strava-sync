@@ -2,15 +2,15 @@ import re
 import logging
 
 
-def download_recent_garmin_runs(page, out_dir, max_activities):
-    logging.info(f"downloading recent garmin runs to {out_dir} (max {max_activities})")
-    activity_ids = get_recent_activity_ids(page, max_activities)
+def download_recent_garmin_runs(page, out_dir, n_activities):
+    logging.info(f"downloading recent garmin runs to {out_dir} ({n_activities})")
+    activity_ids = get_recent_activity_ids(page, n_activities)
     for activity_id in activity_ids:
         download_activity_tcx(page, activity_id, out_dir)
 
 
-# note: case where max_activities exceeds the paging (20?) is not handled.
-def get_recent_activity_ids(page, max_activities):
+# note: case where n_activities exceeds the paging (20?) is not handled.
+def get_recent_activity_ids(page, n_activities):
     logging.info("fetching recent activity IDs")
     page.goto("https://connect.garmin.com/modern/activities?activityType=running")
 
@@ -19,7 +19,7 @@ def get_recent_activity_ids(page, max_activities):
         page.wait_for_timeout(500)
 
     activity_ids = [get_activity_id(activity_link) for activity_link in activity_links]
-    activity_ids = activity_ids[:max_activities]
+    activity_ids = activity_ids[:n_activities]
     logging.info(f"fetched {len(activity_ids)} recent activity IDs: {activity_ids}")
     return activity_ids
 

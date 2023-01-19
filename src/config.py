@@ -9,4 +9,4 @@ class Config:
     garmin_connect_password: str = os.environ["GARMIN_CONNECT_PASSWORD"]
     strava_email: str = os.environ["STRAVA_EMAIL"]
     strava_password: str = os.environ["STRAVA_PASSWORD"]
-    max_activities: int = int(os.environ["GARMIN_STRAVA_SYNC_MAX_ACTIVITIES"])
+    n_activities: int = int(os.environ["GARMIN_STRAVA_SYNC_N_ACTIVITIES"])
