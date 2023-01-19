@@ -25,7 +25,7 @@ def get_recent_activity_ids(page, n_activities):
 
 
 def get_activity_links(page):
-    return [link for link in page.get_by_role("link") if is_activity_link(link)]
+    return [link for link in page.get_by_role("link").all() if is_activity_link(link)]
 
 
 def is_activity_link(link):
