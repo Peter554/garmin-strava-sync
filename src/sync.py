@@ -1,19 +1,40 @@
 import contextlib
 import tempfile
 import logging
+import os
 
 import dotenv
 from playwright.sync_api import sync_playwright
 
-from login import login
-from config import Config
-from download_recent_garmin_activities import download_recent_garmin_activities
-from upload_garmin_activities_to_strava import upload_garmin_activities_to_strava
+
+import config
+import garmin
+import strava
+
+
+def login(
+    browser,
+    garmin_connect_email,
+    garmin_connect_password,
+    strava_email,
+    strava_password,
+):
+    if os.path.exists("context.json"):
+        # assumption: context is not stale
+        logging.info("using existing auth context")
+    else:
+        logging.info("creating new auth context")
+        context = browser.new_context()
+        page = context.new_page()
+        garmin.login(page, garmin_connect_email, garmin_connect_password)
+        strava.login(page, strava_email, strava_password)
+        context.storage_state(path="context.json")
+    return browser.new_context(storage_state="context.json")
 
 
 def main():
     dotenv.load_dotenv()  # support .env file for running locally.
-    config = Config()
+    cfg = config.Config()
 
     logging.basicConfig(level=logging.INFO)
 
@@ -21,19 +42,19 @@ def main():
         with contextlib.closing(p.chromium.launch(headless=False)) as browser:
             context = login(
                 browser,
-                config.garmin_connect_email,
-                config.garmin_connect_password,
-                config.strava_email,
-                config.strava_password,
+                cfg.garmin_connect_email,
+                cfg.garmin_connect_password,
+                cfg.strava_email,
+                cfg.strava_password,
             )
             page = context.new_page()
             with tempfile.TemporaryDirectory() as sync_dir:
-                download_recent_garmin_activities(
+                garmin.download_recent_activity_fit_files(
                     page,
                     sync_dir,
-                    config.n_activities,
+                    cfg.n_activities,
                 )
-                upload_garmin_activities_to_strava(
+                strava.upload_fit_files_to_strava(
                     page,
                     sync_dir,
                 )

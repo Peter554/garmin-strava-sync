@@ -4,7 +4,18 @@ import zipfile
 import os
 
 
-def download_recent_garmin_activities(page, out_dir, n_activities):
+def login(page, garmin_connect_email, garmin_connect_password):
+    logging.info("logging in to garmin")
+    page.goto("https://connect.garmin.com/signin")
+    login_iframe = page.frame_locator("#gauth-widget-frame-gauth-widget")
+    login_iframe.get_by_label("Email").fill(garmin_connect_email)
+    login_iframe.get_by_label("Password").fill(garmin_connect_password)
+    login_iframe.get_by_role("button", name="Sign In").click()
+    page.locator(".signed-in").wait_for()
+    logging.info("logged in to garmin")
+
+
+def download_recent_activity_fit_files(page, out_dir, n_activities):
     logging.info(f"downloading recent garmin activities to {out_dir} ({n_activities})")
     activity_ids = get_recent_activity_ids(page, n_activities)
     for activity_id in activity_ids:
@@ -40,7 +51,7 @@ def get_activity_id(activity_link):
 
 
 def download_activity_fit_file(page, activity_id, out_dir):
-    logging.info(f"downloading activity FIT file: {activity_id}")
+    logging.info(f"downloading FIT file for activity {activity_id}")
     page.goto(f"https://connect.garmin.com/modern/activity/{activity_id}")
     page.get_by_role("button", name="More...").click()
     with page.expect_download() as download_info:
