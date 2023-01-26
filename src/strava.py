@@ -14,7 +14,7 @@ def login(page, strava_email, strava_password):
     logging.info("logged in to strava")
 
 
-def upload_fit_files_to_strava(page, fit_files_dir):
+def upload_fit_files(page, fit_files_dir):
     logging.info(f"uploading FIT files from {fit_files_dir} to strava")
     fit_files = sorted(
         [f for f in os.listdir(fit_files_dir) if f.endswith(".fit")],
@@ -22,10 +22,10 @@ def upload_fit_files_to_strava(page, fit_files_dir):
     )
     logging.info(f"found {len(fit_files)} FIT files: {fit_files}")
     for fit_file in fit_files:
-        upload_fit_file_to_strava(page, fit_files_dir, fit_file)
+        upload_fit_file(page, fit_files_dir, fit_file)
 
 
-def upload_fit_file_to_strava(page, fit_files_dir, fit_file):
+def upload_fit_file(page, fit_files_dir, fit_file):
     logging.info(f"uploading FIT file to strava: {fit_file}")
     page.goto("https://www.strava.com/upload/select")
     page.locator(".files").set_input_files(f"{fit_files_dir}/{fit_file}")

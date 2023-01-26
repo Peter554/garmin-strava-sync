@@ -50,14 +50,9 @@ def main():
             page = context.new_page()
             with tempfile.TemporaryDirectory() as sync_dir:
                 garmin.download_recent_activity_fit_files(
-                    page,
-                    sync_dir,
-                    cfg.n_activities,
+                    page, sync_dir, cfg.n_activities
                 )
-                strava.upload_fit_files_to_strava(
-                    page,
-                    sync_dir,
-                )
+                strava.upload_fit_files(page, sync_dir)
 
 
 if __name__ == "__main__":
