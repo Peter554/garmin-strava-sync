@@ -1,18 +1,20 @@
 import re
 import logging
+import zipfile
+import os
 
 
-def download_recent_garmin_runs(page, out_dir, n_activities):
-    logging.info(f"downloading recent garmin runs to {out_dir} ({n_activities})")
+def download_recent_garmin_activities(page, out_dir, n_activities):
+    logging.info(f"downloading recent garmin activities to {out_dir} ({n_activities})")
     activity_ids = get_recent_activity_ids(page, n_activities)
     for activity_id in activity_ids:
-        download_activity_tcx(page, activity_id, out_dir)
+        download_activity_fit_file(page, activity_id, out_dir)
 
 
 # note: case where n_activities exceeds the paging (20?) is not handled.
 def get_recent_activity_ids(page, n_activities):
     logging.info("fetching recent activity IDs")
-    page.goto("https://connect.garmin.com/modern/activities?activityType=running")
+    page.goto("https://connect.garmin.com/modern/activities")
 
     # assumption: the user has at least 1 activity
     while not (activity_links := get_activity_links(page)):
@@ -37,12 +39,16 @@ def get_activity_id(activity_link):
     return activity_link.get_attribute("href")[17:]
 
 
-def download_activity_tcx(page, activity_id, out_dir):
-    logging.info(f"downloading activity TCX: {activity_id}")
+def download_activity_fit_file(page, activity_id, out_dir):
+    logging.info(f"downloading activity FIT file: {activity_id}")
     page.goto(f"https://connect.garmin.com/modern/activity/{activity_id}")
     page.get_by_role("button", name="More...").click()
     with page.expect_download() as download_info:
-        page.get_by_text("Export to TCX").click()
+        page.get_by_text("Export Original").click()
     download = download_info.value
-    download.save_as(f"{out_dir}/{activity_id}.tcx")
+    with zipfile.ZipFile(download.path(), "r") as zip_:
+        zip_.extract(f"{activity_id}_ACTIVITY.fit", path=out_dir)
+        os.rename(
+            f"{out_dir}/{activity_id}_ACTIVITY.fit", f"{out_dir}/{activity_id}.fit"
+        )
     logging.info("download complete")

@@ -8,5 +8,3 @@ A small automation to sync my activities from Garmin Connect to Strava.
 New Garmin activities will be posted to Strava. 
 
 Updates and deletes on Garmin are not synced to Strava, since this is complex and offers me little benefit (updates/deletes are rare).
-
-Only supports running for now.
